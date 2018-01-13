@@ -143,7 +143,7 @@ public class SimpleRecommenderApplication {
 		
 		//Find the movies I haven't seen yet but have been reviewed - THERE IS A BETTER WAY TO DO THIS... I WILL FIX IT LATER!
 		Map<String, Movie> moviesToWatch = new HashMap<>();
-		String movieTitle;
+		String movieTitle ="";
 		Movie movie;
 		boolean matchedMovie = false;
 		
@@ -172,6 +172,8 @@ public class SimpleRecommenderApplication {
 		double simScore = 0;
 		Double runningTotal = new Double(0);
 		Map<String, Double> sumSimMovieScore = new HashMap<>();
+		Map<String, Double> sumOfProduct = new HashMap<>();
+		Double sumOfProductRunningTotal;
 						
 		for(Reviewer reviewer: reviewers){
 			//	Get the similarity-score relative to Toby (a reviewer) for this reviewer.
@@ -181,8 +183,15 @@ public class SimpleRecommenderApplication {
 			for(String key: moviesToWatch.keySet()){
 				Movie movieToWatch = moviesToWatch.get(key);
 				
-				//Find the movie-score that the reviewer gave this movie.
+				//	Find the movie-score that the reviewer gave this movie.
 				Review r = movieToWatch.getReviewByReviewer(reviewer.getName());
+				
+				/*
+				 * Compute the statistics i.e.
+				 * (1) The sum of the reviewers similarity scores for each movie. 
+				 * (2) The sum of the products (similarity score times the movie 
+				 * score given by each reviewer) for each movie.
+			     */
 				if( r != null){
 					movieScore = movieToWatch.getReviewByReviewer(reviewer.getName()).getScore();					
 					movieTitle = movieToWatch.getTitle();
@@ -193,13 +202,21 @@ public class SimpleRecommenderApplication {
 						runningTotal = new Double( sumSimMovieScore.get(movieTitle));
 						runningTotal += new Double(simScore);
 					}					
-					sumSimMovieScore.put(movieTitle, runningTotal);
-								
-					//	Multiple by the similarity score by the movie score.
+					sumSimMovieScore.put(movieTitle, runningTotal);	
+					
+					
 					double simXmovieScore = simScore * movieScore;
+					
+					if(sumOfProduct.get(movieTitle) == null){
+						sumOfProductRunningTotal = new Double(simXmovieScore);
+					}else{
+						sumOfProductRunningTotal = sumOfProduct.get(movieTitle);
+						sumOfProductRunningTotal += new Double(simXmovieScore);
+					}
+					sumOfProduct.put(movieTitle, sumOfProductRunningTotal);
 				
 					// Test
-					System.out.println("***** simXmovieScore = "+simXmovieScore+ " Movie : "+movieToWatch.getTitle()+" Reviewer : "+reviewer.getName());
+					//System.out.println("***** simXmovieScore = "+simXmovieScore+ " Movie : "+movieToWatch.getTitle()+" Reviewer : "+reviewer.getName());
 				}				
 				
 			}			
@@ -208,6 +225,29 @@ public class SimpleRecommenderApplication {
 		for(String key: sumSimMovieScore.keySet()){
 			System.out.println(key+" SimSum : "+sumSimMovieScore.get(key));
 		}
+		for(String key: sumOfProduct.keySet()){
+			System.out.println(key+" sumOfProduct : "+sumOfProduct.get(key));
+		}
+		
+		/*
+		 * We divide each weight scores by the sum of all the similarities for  
+		 * reviewers of that movie. This allows us to correct for movies that 
+		 * were reviewed by more people.
+		 */
+		
+		for(String key: moviesToWatch.keySet()){
+			movieTitle = moviesToWatch.get(key).getTitle();
+			Double weightedMovieScore = sumOfProduct.get(movieTitle)/sumSimMovieScore.get(movieTitle);
+			System.out.println("Movie : "+movieTitle+" Weighted score : "+weightedMovieScore);
+			
+		}
+		
+		/*TODO
+		 * 1. Clean up and optimize code. 
+		 * 2. Extract to method.
+		 * 3. Create Recommendation object to hold, "movie", "recScore", "summarySats", "reviewer"(who the recommendation is for)
+		 */
 	}
+	
 
 }
