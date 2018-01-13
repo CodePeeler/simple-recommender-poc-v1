@@ -2,24 +2,27 @@ package com.simon.recommender;
 
 public class Rank {
 	
-	String reviewersName;
-	double pearsonsCoefficient;	
+	Reviewer reviewer;
+	double similarityMeasure;	
 	
-	public Rank(String reviewersName, double pearsonsCoefficient) {
-		this.reviewersName = reviewersName;
-		this.pearsonsCoefficient = pearsonsCoefficient;
+	public Rank(Reviewer reviewer, double similarityMeasure) {
+		this.reviewer = reviewer;
+		this.similarityMeasure = similarityMeasure;
 	}
 	
-	public String getReviewersName() {
-		return reviewersName;
+	public Reviewer getReviewer() {
+		return reviewer;
 	}
-	public void setReviewersName(String reviewersName) {
-		this.reviewersName = reviewersName;
+	
+	public void setReviewer(Reviewer reviewer) {
+		this.reviewer = reviewer;
 	}
-	public double getPearsonsCoefficient() {
-		return pearsonsCoefficient;
+	
+	public double getSimilarityMeasure() {
+		return similarityMeasure;
 	}
-	public void setPearsonsCoefficient(double pearsonsCoefficient) {
-		this.pearsonsCoefficient = pearsonsCoefficient;
-	}
+	
+	public void setSimilarityMeasure(double similarityMeasure) {
+		this.similarityMeasure = similarityMeasure;
+	}	
 }
