@@ -165,8 +165,10 @@ public class SimpleRecommenderApplication {
 		}
 
 		//Quick visual check!
+		/*
 		for(String key: moviesToWatch.keySet())
 			System.out.println(moviesToWatch.get(key).getTitle());
+		*/
 		
 		//	Tabulating data to calculate the weighted recommendation score...	IN PROGRESS!!!	
 		double simScore = 0;
@@ -222,12 +224,14 @@ public class SimpleRecommenderApplication {
 			}			
 		}
 		// test
+		/*
 		for(String key: sumSimMovieScore.keySet()){
 			System.out.println(key+" SimSum : "+sumSimMovieScore.get(key));
 		}
 		for(String key: sumOfProduct.keySet()){
 			System.out.println(key+" sumOfProduct : "+sumOfProduct.get(key));
 		}
+		*/
 		
 		/*
 		 * We divide each weight scores by the sum of all the similarities for  
@@ -235,6 +239,7 @@ public class SimpleRecommenderApplication {
 		 * were reviewed by more people.
 		 */
 		
+		System.out.println("*** RECOMMENDATIONS for "+toby.getName()+" ***");
 		for(String key: moviesToWatch.keySet()){
 			movieTitle = moviesToWatch.get(key).getTitle();
 			Double weightedMovieScore = sumOfProduct.get(movieTitle)/sumSimMovieScore.get(movieTitle);
