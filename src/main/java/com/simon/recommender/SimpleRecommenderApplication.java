@@ -3,11 +3,13 @@ package com.simon.recommender;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
+import com.simon.util.MergeSort;
 import com.simon.util.SimilartyFunctions;
+import com.simon.util.SortAlgorithm;
 
 public class SimpleRecommenderApplication {
 	
@@ -163,12 +165,6 @@ public class SimpleRecommenderApplication {
 			}
 			matchedMovie = false;			
 		}
-
-		//Quick visual check!
-		/*
-		for(String key: moviesToWatch.keySet())
-			System.out.println(moviesToWatch.get(key).getTitle());
-		*/
 		
 		//	Tabulating data to calculate the weighted recommendation score...	IN PROGRESS!!!	
 		double simScore = 0;
@@ -238,13 +234,23 @@ public class SimpleRecommenderApplication {
 		 * reviewers of that movie. This allows us to correct for movies that 
 		 * were reviewed by more people.
 		 */
+		List<MovieRecommendation> rankedMovieRecommendations = new ArrayList<MovieRecommendation>();
+		movie = null;
 		
 		System.out.println("*** RECOMMENDATIONS for "+toby.getName()+" ***");
 		for(String key: moviesToWatch.keySet()){
-			movieTitle = moviesToWatch.get(key).getTitle();
-			Double weightedMovieScore = sumOfProduct.get(movieTitle)/sumSimMovieScore.get(movieTitle);
-			System.out.println("Movie : "+movieTitle+" Weighted score : "+weightedMovieScore);
 			
+			movie = moviesToWatch.get(key);
+			movieTitle = movie.getTitle();
+			
+			Double weightedMovieScore = sumOfProduct.get(movieTitle)/sumSimMovieScore.get(movieTitle);
+			rankedMovieRecommendations.add(new MovieRecommendation(movie, weightedMovieScore));						
+		}
+		SortAlgorithm<MovieRecommendation> mergeSort = new MergeSort<MovieRecommendation>();
+		mergeSort.sort(rankedMovieRecommendations, MovieRecommendation::compareTo);		
+		
+		for(MovieRecommendation mr: rankedMovieRecommendations){
+			System.out.println("Movie : " +mr.getMovie().getTitle()+"Recommendation Score : "+mr.getRecommendationScore());
 		}
 		
 		/*TODO
