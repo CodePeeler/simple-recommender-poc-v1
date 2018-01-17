@@ -171,6 +171,7 @@ public class DBConfiguration {
 	 * for production - as you can look up the correct DB to use  *	
 	 **************************************************************/
 /*
+ * 	@Profile("production")
 	@Bean
 	public JndiObjectFactoryBean dataSourceJNDI() {
 		JndiObjectFactoryBean jndiObject = new JndiObjectFactoryBean();
