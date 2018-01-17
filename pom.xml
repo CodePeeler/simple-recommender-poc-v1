@@ -40,6 +40,35 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc  
+        	 The following dependency is all that is required for SimpleDAO to work--> 
+       	<dependency>        
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>6.0.5</version>   
+		</dependency>
+		<!-- Need the above msql and the below commons-dbcp to enable BasicDataSource basic db pooling -->
+		<!-- https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp -->
+		<dependency>
+    		<groupId>commons-dbcp</groupId>
+    		<artifactId>commons-dbcp</artifactId>    		
+		</dependency>
+		<!-- The following dependency is required to work with any of the three Spring datasources. --> 
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-jdbc</artifactId>		    
+		</dependency>
+		<!-- H2 Embedded database  --> 
+		<dependency>
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>		    		    
+		</dependency>	
+		    
+        
+    
+		
+
 	</dependencies>
 
 	<build>
