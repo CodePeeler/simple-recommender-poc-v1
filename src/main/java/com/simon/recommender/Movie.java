@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 	
 public class Movie {
-	
+
 	private String title;
 	private Map<String, Review> reviews;		
 	
