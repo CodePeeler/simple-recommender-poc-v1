@@ -5,11 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.simon.dom.MovieCatalog;
+import com.simon.persistence.DAOService;
 
 /**
  * @author 
@@ -17,24 +21,22 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class MovieController {
-	private final String SQL_QUERY_01 = "SELECT * from Movie";
-	private final String SQL_QUERY_02 = "SELECT * from customer";
-	
+
+	private final String SQL_QUERY_01 = "SELECT * from Movie";	
 	protected Logger logger = Logger.getLogger(MovieController.class.getName());	
 	
 	@Autowired
-	Connection simpleConn;
+	private Connection simpleConn;
 	
 	@Autowired
-	Connection pooledConn;
+	private DAOService daoService;
 		
 	@RequestMapping("/movies")
-	public Movie movies() {
+	public Map<String, Movie> movies() {
 		String title = "NO RESULTS";
 	    String reviewers = "NO REVIEWERS";
 	    int numOfReviews = 0;		
-		Movie movie = new Movie(title);
-		
+				
 	/*** Example using a single JDBC connection ***/
 		
 		Statement stmt = null;
@@ -55,29 +57,13 @@ public class MovieController {
 		    
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}	    
-	   
-    /*** Example using JDBC Connection Pool ***/   
+		}	   
 	    
-	    PreparedStatement pStmt = null;
-	    try {
-		    
-		    pStmt = pooledConn.prepareStatement(SQL_QUERY_02);
-		    ResultSet resultSet = pStmt.executeQuery();
-		    
-		    int v1=0, v2=0, v3=0;		    
-		    while (resultSet.next()){
-		    	{    		
-		    		v1  = resultSet.getInt(1);
-				    v2 = resultSet.getInt(2);
-				    v3 = resultSet.getInt(3);
-				    System.out.println("v1 = "+v1+" v2 = "+v2+" v3 = "+v3);
-		    	}
-	    	}		    
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }      
-		return movie;
+	    /*** Example using JDBC Connection Pool ***/
+	    
+	    MovieCatalog catalog = new MovieCatalog();		
+		daoService.retrieveMovieCatalog(); //daoService uses JDBC Connection Pool.
+		return catalog.getMovieCatalog();
 	}	
 	
 }
