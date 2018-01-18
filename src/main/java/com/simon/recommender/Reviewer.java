@@ -8,28 +8,24 @@ import java.util.Map;
 public class Reviewer {
 	
 	private String name;
-	private List<Review> reviews;					//	Reviews of movie's by the by this reviewer.
-	private Map<String, Rank> similarityRankings; 	//	How similar are other reviewers to this reviewer.
-	private List<Movie> moviesToWatch;				//	Recommended movies for this reviewer to watch. 	
+	private List<Review> reviews;							//	Reviews of movie's by the by this reviewer.
+	private Map<String, Movie> reviewedMovies;
+	private Map<String, Rank> similarityRankings; 			//	How similar other reviewers are to this reviewer.
+	//private List<Movie> moviesToWatch;					//	Movies I haven't seen yet and have been reviewed.
+	private List<MovieRecommendation> recommendedMovies;	// 	Recommended movies for this reviewer.
+	
 	
 	public Reviewer(String name){
 		this.name = name;
 		this.reviews = new ArrayList<Review>();
+		this.reviewedMovies = new HashMap<String, Movie>();
 	}
 	
 	public Reviewer(String name, List<Review> reviews){
 		this.name = name;
 		this.reviews = reviews;
 	}
-	
-	public void addReview(Review review){
-		reviews.add(review);		
-	}
-	
-	public void postReviewToMovie(Review review ){
-		review.getMovie().addReview(review);		
-	}
-
+		
 	public String getName() {
 		return name;
 	}
@@ -41,11 +37,17 @@ public class Reviewer {
 	public List<Review> getReviews() {
 		return reviews;
 	}
-
+	
 	public void addReviews(List<Review> reviews) {		
 		for(Review review: reviews){
+			this.reviewedMovies.put(review.getMovie().getTitle(), review.getMovie());
 			this.reviews.add(review);			
 		}
+	}
+	
+	public void addReview(Review review){
+		this.reviewedMovies.put(review.getMovie().getTitle(), review.getMovie());
+		this.reviews.add(review);		
 	}
 	
 	public void postReviewsToMovies(List<Review> reviews){
@@ -53,6 +55,14 @@ public class Reviewer {
 			review.getMovie().addReview(review);
 		}		
 	}
+	
+	public void postReviewToMovie(Review review ){
+		review.getMovie().addReview(review);		
+	}	
+	
+	public Map<String, Movie> getReviewedMovies() {
+		return reviewedMovies;
+	}	
 
 	public Map<String, Rank> getSimilarityRankings() {
 		return similarityRankings;
@@ -60,8 +70,17 @@ public class Reviewer {
 
 	public void setSimilarityRankings(Map<String, Rank> similarityRankings) {
 		this.similarityRankings = similarityRankings;
-	}	
+	}
 	
+	public List<MovieRecommendation> getRecommendedMovies() {
+		return recommendedMovies;
+	}
+
+	public void setRecommendedMovies(List<MovieRecommendation> recommendedMovies) {
+		this.recommendedMovies = recommendedMovies;
+	}
+
+/*	
 	public List<Movie> getMoviesToWatch() {
 		return moviesToWatch;
 	}
@@ -73,7 +92,7 @@ public class Reviewer {
 	public void addMovieToWatch(Movie movie){
 		moviesToWatch.add(movie);
 	}
-
+*/
 	public void calculateSimilarityRankings(List<Reviewer> reviewers, SimilarityMeasure sim){
 		
 		double similarityMetric = 0;
@@ -82,13 +101,8 @@ public class Reviewer {
 		for(Reviewer reviewer: reviewers){			
 			similarityMetric = sim.calculate(this.getReviews(), reviewer.getReviews());
 			ranking.put(reviewer.getName(), new Rank(reviewer, similarityMetric));			
-		}
-		
-		//Sort the list... highest value first.
-		//SortAlgorithm<Rank> sortAlgorithm = new MergeSort<Rank>();
-		//sortAlgorithm.sort(ranking, (a,b) -> a.getSimilarityMeasure() > b.getSimilarityMeasure() ? 0:1 );
-		
+		}		
 		this.setSimilarityRankings(ranking);		
 	}
-
+	
 }

@@ -5,8 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-
+import com.simon.services.MovieService;
 import com.simon.util.MergeSort;
 import com.simon.util.SimilartyFunctions;
 import com.simon.util.SortAlgorithm;
@@ -26,17 +25,21 @@ public class SimpleRecommenderApplication {
 	
 	public static void main(String[] args){
 		
-		//Prepare the Data...
-		List<Review> reviews;
+		/*
+		 * Prepare the Data...
+		 */
 		
-		Map<String, Movie> movies = new HashMap<>();
+		//	Get a reference to the global movie catalog.
+		Map<String, Movie> movies = MovieService.getMovieCatalog();
+		
 		movies.put(M1, new Movie(M1));
 		movies.put(M2, new Movie(M2));
 		movies.put(M3, new Movie(M3));
 		movies.put(M4, new Movie(M4));
 		movies.put(M5, new Movie(M5));
-		movies.put(M6, new Movie(M6));		
+		movies.put(M6, new Movie(M6));
 		
+		List<Review> reviews;
 		Reviewer lisa = new Reviewer("Lisa Rose");		
 		reviews = Arrays.asList(
 			new Review(lisa, movies.get(M1), 2.5),
@@ -59,8 +62,7 @@ public class SimpleRecommenderApplication {
 			new Review(gene, movies.get(M6), 3.0)
 		);
 		gene.addReviews(reviews);
-		gene.postReviewsToMovies(reviews);
-		
+		gene.postReviewsToMovies(reviews);		
 		
 		Reviewer michael = new Reviewer("Michael Phillips");
 		reviews = Arrays.asList(
@@ -71,8 +73,7 @@ public class SimpleRecommenderApplication {
 			
 		);
 		michael.addReviews(reviews);
-		michael.postReviewsToMovies(reviews);
-		
+		michael.postReviewsToMovies(reviews);		
 		
 		Reviewer claudia = new Reviewer("Claudia Puig");
 			reviews = Arrays.asList(
@@ -83,8 +84,7 @@ public class SimpleRecommenderApplication {
 				new Review(claudia, movies.get(M6), 4.5)				
 			);
 		claudia.addReviews(reviews);
-		claudia.postReviewsToMovies(reviews);
-		
+		claudia.postReviewsToMovies(reviews);		
 		
 		Reviewer mick = new Reviewer("Mick LaSalle");
 		reviews = Arrays.asList(
@@ -108,8 +108,7 @@ public class SimpleRecommenderApplication {
 			new Review(jack, movies.get(M6), 3.0)
 		);
 		jack.addReviews(reviews);
-		jack.postReviewsToMovies(reviews);
-		
+		jack.postReviewsToMovies(reviews);		
 		
 		Reviewer toby = new Reviewer("Toby");		
 		reviews = Arrays.asList(
@@ -132,41 +131,15 @@ public class SimpleRecommenderApplication {
 		
 		// Calculate the ranking for each reviewer relative to Toby.
 		
-		toby.calculateSimilarityRankings(reviewers, SimilartyFunctions::calculatePearsonsCoefficient);
+		toby.calculateSimilarityRankings(reviewers, SimilartyFunctions::calculatePearsonsCoefficient);		
 		
-		System.out.println("*** Getting reviewer's similar to "+toby.getName()+" ***\n");		
-
-		//	Print out the raw rankings
-		Rank rank;
-		for(String key: toby.getSimilarityRankings().keySet() ){
-			rank = toby.getSimilarityRankings().get(key);
-			System.out.println("Reviewer : "+rank.getReviewer().getName()+"\nSimilarity measure : "+rank.getSimilarityMeasure()+"\n");
-		}
-		
-		//Find the movies I haven't seen yet but have been reviewed - THERE IS A BETTER WAY TO DO THIS... I WILL FIX IT LATER!
-		Map<String, Movie> moviesToWatch = new HashMap<>();
-		String movieTitle ="";
-		Movie movie;
-		boolean matchedMovie = false;
-		
-		for(String key : movies.keySet()){
-			movieTitle = movies.get(key).getTitle();
-			movie = movies.get(key);
-			
-			for(Review myMovies : toby.getReviews()){				
-				
-				if( movieTitle.equals(myMovies.getMovie().getTitle()) ){
-					matchedMovie = true;
-					break;
-				}
-			}
-			if(matchedMovie == false){
-				moviesToWatch.put(movieTitle, movie);
-			}
-			matchedMovie = false;			
-		}
+		// Find movies that toby (a reviewer) hasn't seen yet.
+		MovieService ms = new MovieService();
+		Map<String, Movie> moviesToWatch = ms.findMoviesToWatch(toby);
 		
 		//	Tabulating data to calculate the weighted recommendation score...	IN PROGRESS!!!	
+		String movieTitle ="";
+		Movie movie;
 		double simScore = 0;
 		Double runningTotal = new Double(0);
 		Map<String, Double> sumSimMovieScore = new HashMap<>();
@@ -245,18 +218,20 @@ public class SimpleRecommenderApplication {
 			
 			Double weightedMovieScore = sumOfProduct.get(movieTitle)/sumSimMovieScore.get(movieTitle);
 			rankedMovieRecommendations.add(new MovieRecommendation(movie, weightedMovieScore));						
-		}
-		SortAlgorithm<MovieRecommendation> mergeSort = new MergeSort<MovieRecommendation>();
-		mergeSort.sort(rankedMovieRecommendations, MovieRecommendation::compareTo);		
+		}		
+		
+		SortAlgorithm<MovieRecommendation> sortAlgorithm = new MergeSort<MovieRecommendation>();
+		//sortAlgorithm.sort(ranking, (a,b) -> a.getSimilarityMeasure() > b.getSimilarityMeasure() ? 0:1 );
+		sortAlgorithm.sort(rankedMovieRecommendations, MovieRecommendation::compareTo);		
 		
 		for(MovieRecommendation mr: rankedMovieRecommendations){
 			System.out.println("Movie : " +mr.getMovie().getTitle()+"Recommendation Score : "+mr.getRecommendationScore());
 		}
 		
-		/*TODO
+		/* IN PROGRESS...
 		 * 1. Clean up and optimize code. 
 		 * 2. Extract to method.
-		 * 3. Create Recommendation object to hold, "movie", "recScore", "summarySats", "reviewer"(who the recommendation is for)
+		 * 3. Create MoveRecommendation object to hold, "movie", "recScore", "summarySats", "reviewer"(who the recommendation is for).
 		 */
 	}
 	

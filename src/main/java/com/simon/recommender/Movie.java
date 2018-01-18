@@ -26,12 +26,12 @@ public class Movie {
 		return reviews;
 	}
 	
-	public void addReview(Review review){
+	public synchronized void addReview(Review review){
 		this.reviews.put(review.getReviewer().getName(), review);
 		numOfReviews++;
 	}
 
-	public int getNumOfReviews() {
+	public synchronized int getNumOfReviews() {
 		return numOfReviews;
 	}
 	
