@@ -4,10 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 	
 public class Movie {
-	
+
 	private String title;
-	private Map<String, Review> reviews;
-	private int numOfReviews;	
+	private Map<String, Review> reviews;		
 	
 	public Movie(String title) {
 		this.title = title;
@@ -26,13 +25,12 @@ public class Movie {
 		return reviews;
 	}
 	
-	public synchronized void addReview(Review review){
-		this.reviews.put(review.getReviewer().getName(), review);
-		numOfReviews++;
+	public void addReview(Review review){
+		this.reviews.put(review.getReviewer().getName(), review);		
 	}
 
-	public synchronized int getNumOfReviews() {
-		return numOfReviews;
+	public int getNumOfReviews() {
+		return reviews.size();
 	}
 	
 }
