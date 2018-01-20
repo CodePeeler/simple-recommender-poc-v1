@@ -39,8 +39,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		
+		</dependency>		
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc  
         	 The following dependency is all that is required for SimpleDAO to work--> 
        	<dependency>        
