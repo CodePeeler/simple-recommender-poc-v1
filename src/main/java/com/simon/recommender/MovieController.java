@@ -1,12 +1,13 @@
 package com.simon.recommender;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,13 +24,13 @@ import com.simon.persistence.DAOService;
 public class MovieController {
 
 	private final String SQL_QUERY_01 = "SELECT * from Movie";	
-	protected Logger logger = Logger.getLogger(MovieController.class.getName());	
+	protected Logger logger = Logger.getLogger(MovieController.class.getName());
 	
-	@Autowired
-	private Connection simpleConn;
-	
-	@Autowired
+	@Resource(name="daoServiceMySQL")
 	private DAOService daoService;
+	
+	@Autowired
+	private Connection simpleConn;	
 		
 	@RequestMapping("/movies")
 	public Map<String, Movie> movies() {
@@ -61,7 +62,7 @@ public class MovieController {
 	    
 	    /*** Example using JDBC Connection Pool ***/
 	    
-	    MovieCatalog catalog = new MovieCatalog();		
+	    MovieCatalog catalog = new MovieCatalog();	    
 		daoService.retrieveMovieCatalog(); //daoService uses JDBC Connection Pool.
 		return catalog.getMovieCatalog();
 	}	

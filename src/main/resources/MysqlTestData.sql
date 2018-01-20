@@ -1,0 +1,1 @@
+INSERT INTO movie_catalog (movie_title, movie_details) VALUES ('Raiders of the Lost Ark', 'Great Movie');
