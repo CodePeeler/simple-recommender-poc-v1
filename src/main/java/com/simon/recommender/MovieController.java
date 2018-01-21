@@ -26,7 +26,7 @@ public class MovieController {
 	private final String SQL_QUERY_01 = "SELECT * from Movie";	
 	protected Logger logger = Logger.getLogger(MovieController.class.getName());
 	
-	@Resource(name="daoServiceMySQL")
+	@Resource(name="daoServiceMySQL")	
 	private DAOService daoService;
 	
 	@Autowired
@@ -39,7 +39,6 @@ public class MovieController {
 	    int numOfReviews = 0;		
 				
 	/*** Example using a single JDBC connection ***/
-		
 		Statement stmt = null;
 	    ResultSet rs = null;
 		
@@ -59,11 +58,17 @@ public class MovieController {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}	   
-	    
 	    /*** Example using JDBC Connection Pool ***/
 	    
-	    MovieCatalog catalog = new MovieCatalog();	    
-		daoService.retrieveMovieCatalog(); //daoService uses JDBC Connection Pool.
+	    //Example of persisting a movie to the MovieCatalog.
+	    Movie myMovie = new Movie("The Lord of the Rings");
+	    
+	    MovieCatalog catalog = new MovieCatalog();
+	    catalog.addMovieToCatalog(myMovie);
+	    
+	    daoService.persistMovieCatalog(myMovie);//daoService uses JDBC Connection Pool. 	    	    
+		daoService.retrieveMovieCatalog();
+		
 		return catalog.getMovieCatalog();
 	}	
 	

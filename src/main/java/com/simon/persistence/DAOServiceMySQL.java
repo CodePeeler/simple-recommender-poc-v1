@@ -18,17 +18,19 @@ import com.simon.recommender.Movie;
 @Service("daoServiceMySQL")
 public class DAOServiceMySQL implements DAOService {
 	
-	private static final String SQL_RETRIEVE_MOVIES = "SELECT * FROM movie_catalog";
-	//private final String SQL_PERSIST_MOVIES = "";
+	private final String SQL_RETRIEVE_MOVIES = "SELECT * FROM movie_catalog";
+	private final String SQL_PERSIST_MOVIES = "INSERT INTO movie_catalog (movie_title, movie_details) VALUES(?, ?)";
 	
 	@Autowired
 	private BasicDataSource dsPooled;	
 	
 	@Override
-	public void retrieveMovieCatalog(){		
+	public void retrieveMovieCatalog(){
+		PreparedStatement pStmt = null;
+		Connection conn = null;
 	    try {	
-	    	Connection conn = dsPooled.getConnection();
-	    	PreparedStatement pStmt = null;
+	    	conn = dsPooled.getConnection();
+	    	pStmt = null;
 	    	
 		    pStmt = conn.prepareStatement(SQL_RETRIEVE_MOVIES);
 		    ResultSet resultSet = pStmt.executeQuery();
@@ -43,14 +45,44 @@ public class DAOServiceMySQL implements DAOService {
 	    	}		    
 	    } catch (SQLException e) {
 	    	e.printStackTrace();
-	    }
+	    } finally {
+			try {
+				if (pStmt != null) {
+					pStmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+			// I'm even less sure about what to do here
+			}
+		}
 	  		
 	}
 
-/*
-	public boolean persistMovieCatalog(){
-		return false;		
+	public void persistMovieCatalog(Movie movie){
+		System.out.println("At persistMovieCatalog");
+		PreparedStatement pStmt = null;
+		Connection conn = null;
+		try {
+			conn = dsPooled.getConnection();			
+			pStmt = conn.prepareStatement(SQL_PERSIST_MOVIES);
+			pStmt.setString(1, movie.getTitle());
+			pStmt.setString(2, "");
+			pStmt.execute();
+		} catch (SQLException e) {			
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pStmt != null) {
+					pStmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}		
 	}
-*/
-
 }
