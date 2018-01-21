@@ -28,12 +28,13 @@ public class DAOServiceMySQL implements DAOService {
 	public void retrieveMovieCatalog(){
 		PreparedStatement pStmt = null;
 		Connection conn = null;
+		ResultSet resultSet = null;
 	    try {	
 	    	conn = dsPooled.getConnection();
 	    	pStmt = null;
 	    	
 		    pStmt = conn.prepareStatement(SQL_RETRIEVE_MOVIES);
-		    ResultSet resultSet = pStmt.executeQuery();
+		    resultSet = pStmt.executeQuery();
 		    MovieCatalog movieCatalog = new MovieCatalog();
 		    
 		    String movieTitle = null;
@@ -47,6 +48,9 @@ public class DAOServiceMySQL implements DAOService {
 	    	e.printStackTrace();
 	    } finally {
 			try {
+				if(resultSet != null) {				
+					resultSet.close();				
+				}
 				if (pStmt != null) {
 					pStmt.close();
 				}
@@ -54,7 +58,7 @@ public class DAOServiceMySQL implements DAOService {
 					conn.close();
 				}
 			} catch (SQLException e) {
-			// I'm even less sure about what to do here
+				e.printStackTrace();
 			}
 		}
 	  		
